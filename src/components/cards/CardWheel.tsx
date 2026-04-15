@@ -7,6 +7,11 @@ function wrapIndex(i: number, len: number) {
   return ((i % len) + len) % len;
 }
 
+// forward relative position (0 = active, 1 = next, 2 = next-next)
+function forwardRel(i: number, active: number, len: number) {
+  return (i - active + len) % len;
+}
+
 export default function CardWheel({
   cards,
   initialIndex = 0,
@@ -18,7 +23,6 @@ export default function CardWheel({
 }) {
   const reduceMotion = useReducedMotion();
   const len = cards.length;
-
   const [active, setActive] = React.useState(() =>
     len ? wrapIndex(initialIndex, len) : 0
   );
@@ -33,100 +37,93 @@ export default function CardWheel({
 
   if (!len) return null;
 
-  // render only active + 2 behind each side (performance)
-  const radius = Math.min(2, Math.floor((len - 1) / 2));
-  const items = Array.from({ length: radius * 2 + 1 }, (_, k) => k - radius).map(
-    (rel) => {
-      const idx = wrapIndex(active + rel, len);
-      return { card: cards[idx], idx, rel };
+  // show only active + next 2 (this matches the reference stack)
+  const visible = cards
+    .map((card, i) => ({ card, i, rel: forwardRel(i, active, len) }))
+    .filter((x) => x.rel <= 2)
+    .sort((a, b) => b.rel - a.rel); // draw farthest first
+
+  // style presets per stack depth (tuned for the reference look)
+  const styleFor = (rel: number) => {
+    if (rel === 0) {
+      return { x: 0, y: 34, r: 0, s: 1, o: 1, blur: 0 };
     }
-  );
+    if (rel === 1) {
+      return { x: 66, y: -18, r: 16, s: 0.92, o: 0.44, blur: 12 };
+    }
+    // rel === 2
+    return { x: 104, y: -52, r: 26, s: 0.86, o: 0.32, blur: 16 };
+  };
 
   return (
     <div className="relative w-full">
-      <div className="relative mx-auto h-[300px] w-full max-w-[520px]">
-        {/* subtle backdrop */}
-        <div className="pointer-events-none absolute inset-0 rounded-[40px] bg-text-primary/[0.02]" />
+      <div className="relative mx-auto h-[320px] w-full max-w-[520px]">
+        {/* no heavy background plate (clean) */}
+        <div className="pointer-events-none absolute inset-0" />
 
-        {items
-          .slice()
-          .sort((a, b) => Math.abs(b.rel) - Math.abs(a.rel)) // back cards first
-          .map(({ card, idx, rel }) => {
-            const depth = Math.abs(rel);
-            const isActive = rel === 0;
+        {visible.map(({ card, i, rel }) => {
+          const isActive = rel === 0;
+          const st = styleFor(rel);
 
-            // wheel/arc positioning (fintech stacked wheel)
-            const angle = rel * 0.52; // radians
-            const x = Math.sin(angle) * 92;
-            const y = depth * 22 + (1 - Math.cos(angle)) * 30;
+          return (
+            <motion.div
+              key={card.id}
+              className="absolute left-1/2 top-1/2 w-[min(380px,88vw)]"
+              style={{
+                zIndex: 50 - rel,
+                willChange: "transform, opacity, filter",
+                touchAction: "pan-y",
+                backfaceVisibility: "hidden",
+              }}
+              initial={false}
+              animate={{
+                x: `calc(-50% + ${st.x}px)`,
+                y: `calc(-50% + ${st.y}px)`,
+                rotate: st.r,
+                scale: st.s,
+                opacity: st.o,
+                filter: st.blur ? `blur(${st.blur}px)` : "none",
+              }}
+              transition={
+                reduceMotion
+                  ? { duration: 0 }
+                  : { type: "spring", stiffness: 200, damping: 25 }
+              }
+              drag={isActive && len > 1 ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.12}
+              dragMomentum={false}
+              onDragEnd={(_, info) => {
+                const swipe = info.offset.x;
+                const vel = info.velocity.x;
 
-            const rotate = rel * -12;
-            const scale = 1 - depth * 0.07;
-            const opacity = 1 - depth * 0.28;
+                // “skip” to next card like the reference
+                if (swipe < -70 || vel < -800) next();
+                if (swipe > 70 || vel > 800) prev();
+              }}
+              onClick={() => setActive(i)}
+            >
+              {/* Keep active card sharp even if container has blur */}
+              <div style={{ filter: "none" }}>
+                <FintechCard card={card} />
+              </div>
 
-            // required blur on cards behind (limit to keep it smooth)
-            const blur =
-              depth === 0 ? 0 : depth === 1 ? 10 : 14; // 10–18px range
-
-            return (
-              <motion.div
-                key={`${card.id}-${idx}-${rel}`} // stable per position
-                className="absolute left-1/2 top-1/2 w-[min(420px,86vw)]"
-                style={{
-                  zIndex: 50 - depth,
-                  willChange: "transform, opacity, filter",
-                  touchAction: "pan-y",
-                  backfaceVisibility: "hidden",
-                  filter: blur ? `blur(${blur}px)` : "none",
-                }}
-                initial={false}
-                animate={{
-                  x: `calc(-50% + ${x}px)`,
-                  y: `calc(-50% + ${y}px)`,
-                  rotate,
-                  scale,
-                  opacity,
-                }}
-                transition={
-                  reduceMotion
-                    ? { duration: 0 }
-                    : { type: "spring", stiffness: 200, damping: 25 }
-                }
-                drag={isActive && len > 1 ? "x" : false}
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.14}
-                dragMomentum={false}
-                onDragEnd={(_, info) => {
-                  const swipe = info.offset.x;
-                  const vel = info.velocity.x;
-
-                  if (swipe > 70 || vel > 700) prev();
-                  if (swipe < -70 || vel < -700) next();
-                }}
-                onClick={() => setActive(idx)}
-              >
-                {/* active card stays sharp */}
-                <div style={{ filter: "none" }}>
-                  <FintechCard card={card} />
-                </div>
-
-                {/* clean, not heavy shadow */}
-                <div className="pointer-events-none absolute inset-0 -z-10 rounded-3xl shadow-[0_12px_30px_rgba(0,0,0,0.16)]" />
-              </motion.div>
-            );
-          })}
+              {/* soft minimal shadow (not heavy) */}
+              <div className="pointer-events-none absolute inset-0 -z-10 rounded-3xl shadow-[0_10px_24px_rgba(0,0,0,0.18)] light:shadow-[0_10px_24px_rgba(0,0,0,0.10)]" />
+            </motion.div>
+          );
+        })}
       </div>
 
       {/* dots */}
       <div className="mt-3 flex items-center justify-center gap-2">
-        {cards.map((_, i) => (
+        {cards.map((_, idx) => (
           <button
-            key={i}
-            onClick={() => setActive(i)}
-            aria-label={`Go to card ${i + 1}`}
+            key={idx}
+            onClick={() => setActive(idx)}
             className={[
               "h-2 rounded-full transition-all",
-              i === active ? "w-7 bg-accent" : "w-2 bg-text-primary/15",
+              idx === active ? "w-7 bg-accent" : "w-2 bg-text-primary/15",
             ].join(" ")}
           />
         ))}
