@@ -3,8 +3,11 @@
 @theme {
   --color-background: var(--background);
   --color-secondary-background: var(--secondary-background);
-  --color-accent: #00FF99;
-  --color-accent-soft: #4CFFCB;
+
+  /* Accent is now driven by CSS variables */
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-border: var(--border);
@@ -14,165 +17,83 @@
   --radius-3xl: 2rem;
 }
 
-/* =========================
-   Base Theme Tokens
-   - Dark is default
-   - Light is enabled by adding `.light` on <html>
-   ========================= */
+/* ===== Default (Dark) ===== */
 :root {
-  --background: #0D0D0D;
+  /* clean dark */
+  --background: #0B0B0B;
   --secondary-background: #111111;
   --text-primary: #FFFFFF;
-  --text-secondary: #CFCFCF;
-  --border: rgba(255, 255, 255, 0.1);
+  --text-secondary: rgba(255, 255, 255, 0.72);
+  --border: rgba(255, 255, 255, 0.10);
 
-  /* Used by .glass helper */
+  /* ORANGE ACCENT (both modes) */
+  --accent: #FE805D;
+  --accent-soft: #FFD1C5;
+
+  /* glass helper */
   --glass-bg: 17, 17, 17;
 
   background-color: var(--background);
   color: var(--text-primary);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
+/* ===== Light palette (your reference) ===== */
 .light {
-  --background: #FFFFFF;
-  --secondary-background: #F5F5F5;
-  --text-primary: #111111;
-  --text-secondary: #666666;
-  --border: rgba(0, 0, 0, 0.1);
+  --background: #E7F1F9;
+  --secondary-background: rgba(255, 255, 255, 0.75);
+  --text-primary: #26344F;
+  --text-secondary: #7B8387;
+  --border: rgba(38, 52, 79, 0.12);
 
-  --glass-bg: 245, 245, 245;
+  /* keep same orange */
+  --accent: #FE805D;
+  --accent-soft: #FFD1C5;
+
+  --glass-bg: 255, 255, 255;
 }
 
 body {
   @apply bg-background text-text-primary;
 }
 
-/* =========================
-   Scrollbars
-   ========================= */
-/* Global scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--background);
-}
-
+/* scrollbars */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: var(--secondary-background);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #333;
-}
-
-/* Optional: use on containers that scroll (you already reference `custom-scrollbar`) */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 8px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: color-mix(in oklab, var(--secondary-background) 75%, transparent);
+  background: color-mix(in oklab, var(--text-primary) 12%, transparent);
   border-radius: 999px;
 }
 
-/* Hide scrollbars (you used `scrollbar-hide`) */
-.scrollbar-hide {
-  -ms-overflow-style: none; /* IE/Edge */
-  scrollbar-width: none; /* Firefox */
-}
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* =========================
-   Utility Surfaces
-   ========================= */
+/* glass */
 .glass {
-  background: rgba(var(--glass-bg), 0.7);
+  background: rgba(var(--glass-bg), 0.72);
   backdrop-filter: blur(10px);
   border: 1px solid var(--border);
 }
 
-.card-gradient {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
-}
+/* Hide scrollbars */
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
 
-.light .card-gradient {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0) 100%);
-}
-
-.card-tilt {
-  transform: perspective(1000px) rotateX(10deg) rotateY(-10deg);
-  transition: transform 0.3s ease;
-}
-
-.card-tilt:hover {
-  transform: perspective(1000px) rotateX(5deg) rotateY(-5deg);
-}
-
-/* =========================
-   Existing Gradients (keep)
-   ========================= */
-.credit-card-gradient-1 {
-  background: linear-gradient(135deg, #00FF99 0%, #0099FF 100%);
-}
-
-.credit-card-gradient-2 {
-  background: linear-gradient(135deg, #4CFFCB 0%, #8E2DE2 100%);
-}
-
-.credit-card-gradient-3 {
-  background: linear-gradient(135deg, #111111 0%, #333333 100%);
-}
-
-/* =========================
-   NEW: Subora Premium Card Themes
-   Used by FintechCard.tsx:
-   - subora-card-obsidian
-   - subora-card-midnight
-   - subora-card-jade
-   - subora-card-pearl (light/minimal)
-   ========================= */
-.subora-card-obsidian {
-  background:
-    radial-gradient(1200px 600px at 10% 10%, rgba(0, 255, 153, 0.18), transparent 55%),
-    linear-gradient(135deg, #0B0B0B 0%, #111111 45%, #1A1A1A 100%);
+/* ===== Minimal Card Themes (clean) ===== */
+.subora-card-black {
+  background: linear-gradient(135deg, #0A0A0A 0%, #151515 55%, #0F0F0F 100%);
   color: #fff;
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.55);
 }
 
-.subora-card-midnight {
-  background:
-    radial-gradient(900px 500px at 85% 10%, rgba(76, 255, 203, 0.16), transparent 55%),
-    linear-gradient(135deg, #070A12 0%, #0F1424 50%, #121B2E 100%);
+.subora-card-graphite {
+  background: linear-gradient(135deg, #121212 0%, #1E1E1E 60%, #141414 100%);
   color: #fff;
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.55);
 }
 
-.subora-card-jade {
-  background:
-    radial-gradient(900px 500px at 20% 20%, rgba(0, 255, 153, 0.18), transparent 55%),
-    linear-gradient(135deg, #04231A 0%, #063A2A 45%, #0A5A40 100%);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.55);
-}
-
-/* Light “premium physical-card” look inspired by your grey/white references */
 .subora-card-pearl {
-  background:
-    radial-gradient(900px 500px at 20% 10%, rgba(0, 0, 0, 0.05), transparent 55%),
-    linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 55%, #FFFFFF 100%);
+  background: linear-gradient(135deg, #FFFFFF 0%, #F3F5F7 60%, #FFFFFF 100%);
   color: #111;
-  border: 1px solid rgba(0,0,0,0.08);
-  box-shadow: 0 22px 70px rgba(0,0,0,0.12);
 }
+
+/* Keep your old gradients if still used elsewhere */
+.credit-card-gradient-1 { background: linear-gradient(135deg, var(--accent) 0%, #0099FF 100%); }
+.credit-card-gradient-2 { background: linear-gradient(135deg, var(--accent-soft) 0%, #8E2DE2 100%); }
+.credit-card-gradient-3 { background: linear-gradient(135deg, #111111 0%, #333333 100%); }
