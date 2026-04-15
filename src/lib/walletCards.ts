@@ -5,9 +5,9 @@ export type WalletCard = {
   balance: number;
   holder: string;
   last4: string;
-  exp: string; // "09/26"
+  exp: string;
   brand: "VISA" | "MASTERCARD";
-  theme: "obsidian" | "midnight" | "pearl" | "jade";
+  theme: "black" | "graphite" | "pearl";
   tone: CardTone;
 };
 
@@ -19,7 +19,7 @@ export const WALLET_CARDS: WalletCard[] = [
     last4: "7890",
     exp: "09/26",
     brand: "VISA",
-    theme: "obsidian",
+    theme: "black",
     tone: "dark",
   },
   {
@@ -29,22 +29,11 @@ export const WALLET_CARDS: WalletCard[] = [
     last4: "5678",
     exp: "12/25",
     brand: "MASTERCARD",
-    theme: "midnight",
+    theme: "graphite",
     tone: "dark",
   },
   {
     id: "card_3",
-    balance: 840.5,
-    holder: "ALEX CARTER (WORK)",
-    last4: "9010",
-    exp: "01/27",
-    brand: "VISA",
-    theme: "jade",
-    tone: "dark",
-  },
-  // Light “minimal / premium physical-card” style option
-  {
-    id: "card_4",
     balance: 560.25,
     holder: "ALEX CARTER",
     last4: "1385",
