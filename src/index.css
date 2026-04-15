@@ -8,19 +8,27 @@
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-border: var(--border);
-  
+
   --radius-xl: 1rem;
   --radius-2xl: 1.5rem;
   --radius-3xl: 2rem;
 }
 
+/* =========================
+   Base Theme Tokens
+   - Dark is default
+   - Light is enabled by adding `.light` on <html>
+   ========================= */
 :root {
   --background: #0D0D0D;
   --secondary-background: #111111;
   --text-primary: #FFFFFF;
   --text-secondary: #CFCFCF;
   --border: rgba(255, 255, 255, 0.1);
-  
+
+  /* Used by .glass helper */
+  --glass-bg: 17, 17, 17;
+
   background-color: var(--background);
   color: var(--text-primary);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -33,13 +41,18 @@
   --text-primary: #111111;
   --text-secondary: #666666;
   --border: rgba(0, 0, 0, 0.1);
+
+  --glass-bg: 245, 245, 245;
 }
 
 body {
   @apply bg-background text-text-primary;
 }
 
-/* Custom Scrollbar */
+/* =========================
+   Scrollbars
+   ========================= */
+/* Global scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -57,18 +70,34 @@ body {
   background: #333;
 }
 
+/* Optional: use on containers that scroll (you already reference `custom-scrollbar`) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--secondary-background) 75%, transparent);
+  border-radius: 999px;
+}
+
+/* Hide scrollbars (you used `scrollbar-hide`) */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE/Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* =========================
+   Utility Surfaces
+   ========================= */
 .glass {
   background: rgba(var(--glass-bg), 0.7);
   backdrop-filter: blur(10px);
   border: 1px solid var(--border);
-}
-
-:root {
-  --glass-bg: 17, 17, 17;
-}
-
-.light {
-  --glass-bg: 245, 245, 245;
 }
 
 .card-gradient {
@@ -88,6 +117,9 @@ body {
   transform: perspective(1000px) rotateX(5deg) rotateY(-5deg);
 }
 
+/* =========================
+   Existing Gradients (keep)
+   ========================= */
 .credit-card-gradient-1 {
   background: linear-gradient(135deg, #00FF99 0%, #0099FF 100%);
 }
@@ -98,4 +130,49 @@ body {
 
 .credit-card-gradient-3 {
   background: linear-gradient(135deg, #111111 0%, #333333 100%);
+}
+
+/* =========================
+   NEW: Subora Premium Card Themes
+   Used by FintechCard.tsx:
+   - subora-card-obsidian
+   - subora-card-midnight
+   - subora-card-jade
+   - subora-card-pearl (light/minimal)
+   ========================= */
+.subora-card-obsidian {
+  background:
+    radial-gradient(1200px 600px at 10% 10%, rgba(0, 255, 153, 0.18), transparent 55%),
+    linear-gradient(135deg, #0B0B0B 0%, #111111 45%, #1A1A1A 100%);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+}
+
+.subora-card-midnight {
+  background:
+    radial-gradient(900px 500px at 85% 10%, rgba(76, 255, 203, 0.16), transparent 55%),
+    linear-gradient(135deg, #070A12 0%, #0F1424 50%, #121B2E 100%);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+}
+
+.subora-card-jade {
+  background:
+    radial-gradient(900px 500px at 20% 20%, rgba(0, 255, 153, 0.18), transparent 55%),
+    linear-gradient(135deg, #04231A 0%, #063A2A 45%, #0A5A40 100%);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+}
+
+/* Light “premium physical-card” look inspired by your grey/white references */
+.subora-card-pearl {
+  background:
+    radial-gradient(900px 500px at 20% 10%, rgba(0, 0, 0, 0.05), transparent 55%),
+    linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 55%, #FFFFFF 100%);
+  color: #111;
+  border: 1px solid rgba(0,0,0,0.08);
+  box-shadow: 0 22px 70px rgba(0,0,0,0.12);
 }
