@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: var(--background);
+  --color-secondary-background: var(--secondary-background);
+  --color-accent: #00FF99;
+  --color-accent-soft: #4CFFCB;
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border: var(--border);
+  
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+}
+
+:root {
+  --background: #0D0D0D;
+  --secondary-background: #111111;
+  --text-primary: #FFFFFF;
+  --text-secondary: #CFCFCF;
+  --border: rgba(255, 255, 255, 0.1);
+  
+  background-color: var(--background);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.light {
+  --background: #FFFFFF;
+  --secondary-background: #F5F5F5;
+  --text-primary: #111111;
+  --text-secondary: #666666;
+  --border: rgba(0, 0, 0, 0.1);
+}
+
+body {
+  @apply bg-background text-text-primary;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-background);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+
+.glass {
+  background: rgba(var(--glass-bg), 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+}
+
+:root {
+  --glass-bg: 17, 17, 17;
+}
+
+.light {
+  --glass-bg: 245, 245, 245;
+}
+
+.card-gradient {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.light .card-gradient {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02) 0%, rgba(0, 0, 0, 0) 100%);
+}
+
+.card-tilt {
+  transform: perspective(1000px) rotateX(10deg) rotateY(-10deg);
+  transition: transform 0.3s ease;
+}
+
+.card-tilt:hover {
+  transform: perspective(1000px) rotateX(5deg) rotateY(-5deg);
+}
+
+.credit-card-gradient-1 {
+  background: linear-gradient(135deg, #00FF99 0%, #0099FF 100%);
+}
+
+.credit-card-gradient-2 {
+  background: linear-gradient(135deg, #4CFFCB 0%, #8E2DE2 100%);
+}
+
+.credit-card-gradient-3 {
+  background: linear-gradient(135deg, #111111 0%, #333333 100%);
+}
